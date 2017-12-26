@@ -156,10 +156,11 @@ class Estimate_ABM:
         b = -2 * np.sum(x * self.s) / np.sum(self.s)
         c = np.sum(np.square(self.s)) / np.sum(self.s)
         mse, sigma = np.sqrt(sum(self.s) * (4 * a * c - b ** 2) / (4 * a * self.s_len)), -b / (2 * a)
-        m = sigma * self.G.number_of_nodes()
+        m = sigma * self.g.number_of_nodes()
         return mse, p, q, m, x * sigma
     
     def gener_p0_q0(self):  # 生成初始搜索点(p0,q0)
+        t1 = time.clock()
         rgs = Random_Grid_Search(self.s)
         P0,Q0 = rgs.optima_search()[1:3]  # SABM最优点（P0,Q0）
         p_range = np.linspace(0.4 * P0, P0, num=3)
@@ -186,6 +187,8 @@ class Estimate_ABM:
 
         p0 = result_p.params['P'] * P0 + result_p.params['Q'] * Q0
         q0 = result_q.params['P'] * P0 + result_q.params['Q'] * Q0
+
+        print('第1阶段的时间: %.2f s' % (time.clock() - t1))
         return p0, q0
     
     def solution_search(self, p0, q0):
